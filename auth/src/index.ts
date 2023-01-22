@@ -1,5 +1,7 @@
 import express from "express";
 import "express-async-errors";
+import mongoose from "mongoose";
+
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { currentUserRouter } from "./routes/current-user";
@@ -21,6 +23,19 @@ app.all("*", async () => {
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("Auth Service running!");
-});
+const start = async () => {
+  try {
+    mongoose.set("strictQuery", true);
+    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
+
+    console.log("Connected to MongoDb!");
+  } catch (err) {
+    console.log(err);
+  }
+
+  app.listen(3000, () => {
+    console.log("Auth Service running!");
+  });
+};
+
+start();
